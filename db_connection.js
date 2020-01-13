@@ -85,14 +85,6 @@ const questions = [
             return answers.what_to_do == "Add Role"
         }
     },
-    // {
-    //     type: "input",
-    //     name: "role_department",
-    //     message: "Input Role's Department: ",
-    //     when: function (answers) {
-    //         return answers.what_to_do == "Add Role"
-    //     }
-    // },
     {
         type: "input",
         name: "employee_first_name",
@@ -109,29 +101,29 @@ const questions = [
             return answers.what_to_do == "Add Employee"
         }
     },
-    {
-        type: "input",
-        name: "employee_role",
-        message: "Input Employee's Role: ",
-        when: function (answers) {
-            return answers.what_to_do == "Add Employee"
-        }
-    },
-    {
-        type: "input",
-        name: "employee_manager",
-        message: "Input Employee's Manager: ",
-        when: function (answers) {
-            return answers.what_to_do == "Add Employee"
-        }
-    },
+    // {
+    //     type: "input",
+    //     name: "employee_role",
+    //     message: "Input Employee's Role: ",
+    //     when: function (answers) {
+    //         return answers.what_to_do == "Add Employee"
+    //     }
+    // },
+    // {
+    //     type: "input",
+    //     name: "employee_manager",
+    //     message: "Input Employee's Manager: ",
+    //     when: function (answers) {
+    //         return answers.what_to_do == "Add Employee"
+    //     }
+    // },
     {
         type: "input",
         name: "selected_employee",
         message: "Select Employee: ",
         when: function (answers) {
             return answers.what_to_do == "Update Employee Role"
-        }
+        },
     },
     {
         type: "input",
@@ -276,23 +268,74 @@ async function view_roles() {
 function add_employee(employee) {
     console.log(employee)
     console.log("========= Add employee ==========")
+    let role_list = []
+    connection.query("SELECT role_id, title, dept_name, salary  FROM role LEFT JOIN department ON department.dept_id = role.dept_id", (err, role_table) => {
 
+        role_table.forEach(role => {
+            role_list.push(role.title + " " + role.dept_name + " " + role.salary)
+        });
+        connection.query("SELECT emp_id, first_name, last_name from employee", (err, employee_table) => {
+            let employee_list = []
+            employee_table.forEach(emp => {
+                employee_list.push(emp.first_name + " " + emp.last_name);
+            })
 
-    const query_str =
-        `
-            INSERT INTO employee (first_name, last_name, role_id, manager_id)
-            VALUES (
-                "${employee.employee_first_name}",
-                "${employee.employee_last_name}",
-                "${employee.employee_role}",
-                "${employee.employee_manager}"
-            )
-        `;
-    connection.query(query_str, function (err, res) {
-        if (err) throw err;
-        console.log("\n\n+++++++++++ " + query_str + " \n+++++++++++")
-        console.log(res);
-        start_employee_tracker()
+            let role_questions = [
+                {
+                    type: "list",
+                    name: "employee_role",
+                    message: "Input Employee's Role: ",
+                    choices: role_list
+                },
+                {
+                    type: "list",
+                    name: "employee_manager",
+                    message: "Input Employee's Manager: ",
+                    choices: employee_list
+                }
+            ]
+
+            inquirer.prompt(role_questions)
+                .then((role_questions_response) => {
+                    let role_id;
+                    for(let j = 0; j <= role_list.length; j+=1){
+                        if (role_questions_response.employee_role === role_table[j].title + " " + role_table[j].dept_name + " " + role_table[j].salary){
+                            role_id = role_table[j].role_id;
+                            break;
+                        }
+                    }
+
+                    let manager_id;
+                    for (let index = 0; index < employee_table.length; index++) {
+                        console.log(role_questions_response.employee_manager + " === " + employee_table[index].last_name + "is " +
+                        role_questions_response.employee_manager === employee_table[index].first_name + " " + employee_table[index].last_name)
+                        if(role_questions_response.employee_manager === employee_table[index].first_name + " " + employee_table[index].last_name){
+                            manager_id = employee_table[index].emp_id;
+                            break;
+                        }
+
+                    }
+
+                    const query_str =
+                        `
+                            INSERT INTO employee (first_name, last_name, role_id, manager_id)
+                            VALUES (
+                                "${employee.employee_first_name}",
+                                "${employee.employee_last_name}",
+                                "${role_id}",
+                                "${manager_id}"
+                            )
+                        `;
+
+                    connection.query(query_str, function (err, res) {
+                        if (err) throw err;
+                        console.log("\n\n+++++++++++ " + query_str + " \n+++++++++++")
+                        console.log(res);
+                        start_employee_tracker()
+                    })
+
+                })
+        })
     })
 
 }
