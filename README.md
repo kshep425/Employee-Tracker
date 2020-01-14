@@ -2,7 +2,7 @@
 Solution for managing a company's employees using node, inquirer, and MySQL.
 
 ## Goals
-Using this tool will allow you to create a workforce and assign employees roles, departments, and managers.  The user will be able to: the user to:
+Using this tool will allow you to create a workforce and assign employees roles, departments, and managers.  The user will allow the user to:
 
   * Add departments, roles, employees
 
@@ -15,7 +15,11 @@ With it I've learned about database design and queries.
 
 ## Instructions
 
-  1.  Download the app, navigate to the folder in which it is located.
+  1.  Download or clone the app the app from github.
+        ```
+        git clone https://github.com/kshep425/Employee-Tracker.git
+        ```
+  1.  Create the database using the employee_db.sql file
   1.  Install packages:
         ```
         npm install mysql
