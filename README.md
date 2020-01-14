@@ -15,7 +15,18 @@ With it I've learned about database design and queries.
 
 ## Instructions
 
-  1.  Start Employee Tracker:  ``` node db_connection.js ```
+  1.  Download the app, navigate to the folder in which it is located.
+  1.  Install packages:
+        ```
+        npm install mysql
+        npm install inquirer
+        ```
+  1.  Start Employee Tracker:
+
+        ```
+        node db_connection.js
+        ```
+
   1.  Select What you would like to do and follow the prompts.
       * Use the arrow keys and enter button on your keyboard to select from lists
       * Select 'Enter' to submit input information such as employee name, department name and role.
