@@ -101,38 +101,6 @@ const questions = [
             return answers.what_to_do == "Add Employee"
         }
     },
-    // {
-    //     type: "input",
-    //     name: "employee_role",
-    //     message: "Input Employee's Role: ",
-    //     when: function (answers) {
-    //         return answers.what_to_do == "Add Employee"
-    //     }
-    // },
-    // {
-    //     type: "input",
-    //     name: "employee_manager",
-    //     message: "Input Employee's Manager: ",
-    //     when: function (answers) {
-    //         return answers.what_to_do == "Add Employee"
-    //     }
-    // },
-    {
-        type: "input",
-        name: "selected_employee",
-        message: "Select Employee: ",
-        when: function (answers) {
-            return answers.what_to_do == "Update Employee Role"
-        },
-    },
-    {
-        type: "input",
-        name: "new_employee_role",
-        message: "Select New Employee Role: ",
-        when: function (answers) {
-            return answers.what_to_do == "Update Employee Role"
-        }
-    }
 ]
 
 const inquirer = require("inquirer")
@@ -298,8 +266,8 @@ function add_employee(employee) {
             inquirer.prompt(role_questions)
                 .then((role_questions_response) => {
                     let role_id;
-                    for(let j = 0; j <= role_list.length; j+=1){
-                        if (role_questions_response.employee_role === role_table[j].title + " " + role_table[j].dept_name + " " + role_table[j].salary){
+                    for (let j = 0; j <= role_list.length; j += 1) {
+                        if (role_questions_response.employee_role === role_table[j].title + " " + role_table[j].dept_name + " " + role_table[j].salary) {
                             role_id = role_table[j].role_id;
                             break;
                         }
@@ -308,8 +276,8 @@ function add_employee(employee) {
                     let manager_id;
                     for (let index = 0; index < employee_table.length; index++) {
                         console.log(role_questions_response.employee_manager + " === " + employee_table[index].last_name + "is " +
-                        role_questions_response.employee_manager === employee_table[index].first_name + " " + employee_table[index].last_name)
-                        if(role_questions_response.employee_manager === employee_table[index].first_name + " " + employee_table[index].last_name){
+                            role_questions_response.employee_manager === employee_table[index].first_name + " " + employee_table[index].last_name)
+                        if (role_questions_response.employee_manager === employee_table[index].first_name + " " + employee_table[index].last_name) {
                             manager_id = employee_table[index].emp_id;
                             break;
                         }
@@ -361,16 +329,67 @@ async function view_employees() {
 }
 
 function update_employee_roles(update) {
-    console.log(`Update employee #${update.selected_employee} with role: ${update.new_employee_role}`)
-    const query_str =
-        `
-            UPDATE employee
-            SET role_id= "${update.new_employee_role}"
-            WHERE emp_id = "${update.selected_employee}"
-        `
-    console.log("\n\n+++++++++++ " + query_str + " \n+++++++++++")
-    connection.query(query_str, function (err, res) {
-        if (err) throw err;
-        start_employee_tracker()
-    })
-}
+
+    let employee_list = []
+    let role_list = []
+    connection.query("SELECT emp_id, first_name, last_name from employee", (err, employee_table) => {
+        employee_table.forEach(emp => {
+            employee_list.push(emp.first_name + " " + emp.last_name);
+        })
+
+        connection.query("SELECT role_id, title, dept_name, salary  FROM role LEFT JOIN department ON department.dept_id = role.dept_id", (err, role_table) => {
+
+            role_table.forEach(role => {
+                role_list.push(role.title + " " + role.dept_name + " " + role.salary)
+            });
+            const update_role_questions = [
+
+                {
+                    type: "list",
+                    name: "employee",
+                    message: "Select Employee: ",
+                    choices: employee_list
+                },
+                {
+                    type: "list",
+                    name: "employee_role",
+                    message: "Select New Role: ",
+                    choices: role_list
+                },
+            ]
+
+            inquirer.prompt(update_role_questions)
+            .then((update_role_questions_response) => {
+                    let role_id;
+                    for (let j = 0; j <= role_list.length; j += 1) {
+                        if (update_role_questions_response.employee_role === role_table[j].title + " " + role_table[j].dept_name + " " + role_table[j].salary) {
+                            role_id = role_table[j].role_id;
+                            break;
+                        }
+                    }
+
+                    let emp_id;
+                    for (let index = 0; index < employee_table.length; index++) {
+                        if (update_role_questions_response.employee === employee_table[index].first_name + " " + employee_table[index].last_name) {
+                            emp_id = employee_table[index].emp_id;
+                            break;
+                        }
+                    }
+
+
+                    console.log(`Update employee #${update.selected_employee} with role: ${update.new_employee_role}`)
+                    const query_str =
+                        `
+                            UPDATE employee
+                            SET role_id= "${role_id}"
+                            WHERE emp_id = "${emp_id}"
+                        `
+                    console.log("\n\n+++++++++++ " + query_str + " \n+++++++++++")
+                    connection.query(query_str, function (err, res) {
+                        if (err) throw err;
+                        start_employee_tracker()
+                    })
+                }) // inquirer .then
+        }) // role table query
+    }) // employee table query
+} // function update_employee_roles
