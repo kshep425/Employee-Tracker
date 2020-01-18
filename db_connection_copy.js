@@ -22,7 +22,7 @@ connection.connect(function (err) {
     }
     console.log("connected as id " + connection.threadId);
 
-    query = "SELECT * from departments"
+    query = "SELECT * from department"
     sql(query).then(function(err, res){
         if (err) throw err;
         console.table(res)
