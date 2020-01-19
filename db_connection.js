@@ -128,14 +128,14 @@ function start_employee_tracker() {
                 update_employee_roles(response);
             } else if (response.what_to_do == "Exit") {
                 console.log("Thank you for using Employee Tracker!")
-                console.log("Session Ended")
+                // console.log("Session Ended")
                 // display_all_tables()
                 return connection.end()
             }
         }).catch((err) => {
             console.error(err)
             // console.log("An Error Occured")
-            console.log("Session Ended")
+            // console.log("Session Ended")
             // display_all_tables()
             return connection.end()
         })
