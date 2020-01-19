@@ -33,14 +33,14 @@ With it I've learned about database design and queries.
 
   1.  Select What you would like to do and follow the prompts.
       * Use the arrow keys and enter button on your keyboard to select from lists
-      * Select 'Enter' to submit input information such as employee name, department name and role.
+      * Push 'Enter' button to submit input information such as employee name, department name and role.
 
 
 ## Author
 [Keisha Shepherd](https://github.com/kshep425/)
 
 ## Dependencies
-A lot of the code was provided by the bootcamp homework.
+A lot of the mysql code was provided by the bootcamp homework.
 
 ## License
 MIT License
