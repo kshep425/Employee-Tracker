@@ -14,6 +14,7 @@ CREATE TABLE role(
   title VARCHAR(30),
   salary DECIMAL(10,2),
   dept_id INTEGER
+  FOREIGN KEY (dept_id) REFERENCES department(dept_id)
 );
 SELECT * from role;
 
@@ -24,6 +25,8 @@ CREATE TABLE employee(
 	last_name VARCHAR(30), # to hold employee last name
 	role_id INT, # to hold reference to role employee has
 	manager_id INT # to hold reference to another employee that manager of the current employee. This field may be null if the employee has no manager
+    FOREIGN KEY (role_id) REFERENCES role(role_id)
+    FOREIGN KEY (manager_id) REFERENCES employee(emp_id)
   );
 
   SELECT * from employee;
