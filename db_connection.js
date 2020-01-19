@@ -17,7 +17,7 @@ var connection = mysql.createConnection({
 
 connection.connect(function (err) {
     if (err) {
-        console.log("This isn't working!!!!" + connection.config)
+        console.error("This isn't working!!!!" + connection.config)
         throw err;
     }
     console.log("connected as id " + connection.threadId);
@@ -26,30 +26,30 @@ connection.connect(function (err) {
     //    connection.end();
 });
 
-async function display_all_tables() {
-    const tables = ["department", "role", "employee"]
-    tables.forEach(table => {
-        display_table(table)
-    })
-};
+// async function display_all_tables() {
+//     const tables = ["department", "role", "employee"]
+//     tables.forEach(table => {
+//         display_table(table)
+//     })
+// };
 
-async function display_table(table) {
-    const res = await select_table(table)
-    console.log(res);
-}
+// async function display_table(table) {
+//     const res = await select_table(table)
+//     console.table(res);
+// }
 
-function select_table(table) {
+// function select_table(table) {
 
-    const query_str = "SELECT * from " + table
-    connection.query(query_str, function (err, res) {
-        if (err) throw err;
-        console.log("\n\n+++++++++++ " + query_str + " +++++++++++")
-        console.log(res)
-        return res;
-    })
-}
+//     const query_str = "SELECT * from " + table
+//     connection.query(query_str, function (err, res) {
+//         if (err) throw err;
+//         console.log("\n\n+++++++++++ " + query_str + " +++++++++++")
+//         console.log(res)
+//         return res;
+//     })
+// }
 
-display_all_tables()
+// display_all_tables()
 
 const questions = [
     {
@@ -111,7 +111,7 @@ function start_employee_tracker() {
 
     inquirer.prompt(questions)
         .then((response) => {
-            console.log(response)
+            // console.log(response)
             if (response.what_to_do == "Add Department") {
                 add_department(response.department_name);
             } else if (response.what_to_do == "View Departments") {
@@ -129,14 +129,14 @@ function start_employee_tracker() {
             } else if (response.what_to_do == "Exit") {
                 console.log("Thank you for using Employee Tracker!")
                 console.log("Session Ended")
-                display_all_tables()
+                // display_all_tables()
                 return connection.end()
             }
         }).catch((err) => {
-            console.log(err)
-            console.log("An Error Occured")
+            console.error(err)
+            // console.log("An Error Occured")
             console.log("Session Ended")
-            display_all_tables()
+            // display_all_tables()
             return connection.end()
         })
 }
@@ -149,8 +149,8 @@ function add_department(department) {
         `;
     connection.query(query_str, function (err, res) {
         if (err) throw err;
-        console.log("\n\n+++++++++++ " + query_str + "\n+++++++++++")
-        console.table(res);
+        // console.log("\n\n+++++++++++ " + query_str + "\n+++++++++++")
+        // console.table(res);
         start_employee_tracker()
     })
 
@@ -160,7 +160,7 @@ async function view_departments() {
     const query_str = "SELECT * from department"
     connection.query(query_str, function (err, res) {
         if (err) throw err;
-        console.log("\n\n+++++++++++ " + query_str + " +++++++++++")
+        // console.log("\n\n+++++++++++ " + query_str + " +++++++++++")
         console.log("========= List of Departments =========");
         console.table(res);
         start_employee_tracker();
@@ -169,7 +169,7 @@ async function view_departments() {
 }
 
 function add_role(role) {
-    console.log("=========Add role==========")
+    // console.log("=========Add role==========")
     const get_dept_query_str = 'SELECT * FROM department'
     connection.query(get_dept_query_str, function (err, department_table) {
         let departments = [];
@@ -179,7 +179,9 @@ function add_role(role) {
         })
 
         if (departments.length === 0) {
+            console.log("+++++++++++++++++++++++++++++++++")
             console.log("You must add a department first.")
+            console.log("+++++++++++++++++++++++++++++++++")
             return start_employee_tracker();
         }
 
@@ -223,8 +225,8 @@ function add_role(role) {
 
             connection.query(query_str, function (err, res) {
                 if (err) throw err;
-                console.log("\n\n+++++++++++ " + query_str + "\n+++++++++++")
-                console.table(res);
+                // console.log("\n\n+++++++++++ " + query_str + "\n+++++++++++")
+                // console.table(res);
                 start_employee_tracker()
             })
         })
@@ -242,7 +244,7 @@ async function view_roles() {
                 LEFT JOIN department
                 ON role.dept_id = department.dept_id
             `
-    console.log("\n\n+++++++++++ " + query_str + "\n+++++++++++")
+    // console.log("\n\n+++++++++++ " + query_str + "\n+++++++++++")
     connection.query(query_str, function (err, res) {
         if (err) throw err;
         console.table(res)
@@ -252,11 +254,11 @@ async function view_roles() {
 }
 
 async function add_employee(restart_employee_tracker = true) {
-    console.log()
-    console.log("========= Add employee ==========")
+
+    // console.log("\n========= Add employee ==========")
     let role_list = []
     connection.query("SELECT role_id, title, dept_name, salary  FROM role LEFT JOIN department ON department.dept_id = role.dept_id", (err, role_table) => {
-        console.table(role_table)
+        // console.table(role_table)
         if (role_table.length === 0){
             console.log("+++++++++++++++++++++++++++++++")
             console.log("You must add a role first")
@@ -267,8 +269,7 @@ async function add_employee(restart_employee_tracker = true) {
             role_list.push(role.title + " " + role.dept_name + " " + role.salary)
         });
         connection.query("SELECT emp_id, first_name, last_name from employee", (err, employee_table) => {
-            console.table(employee_table)
-            employee_table = [];
+            // console.table(employee_table)
 
             let employee_list = []
             employee_table.forEach(emp => {
@@ -316,8 +317,8 @@ async function add_employee(restart_employee_tracker = true) {
                     // default manager_id to 1 if employee_table is empty
                     let manager_id = 1;
                     for (let index = 0; index < employee_table.length; index++) {
-                        console.log(role_questions_response.employee_manager + " === " + employee_table[index].last_name + "is " +
-                            role_questions_response.employee_manager === employee_table[index].first_name + " " + employee_table[index].last_name)
+                        // console.log(role_questions_response.employee_manager + " === " + employee_table[index].last_name + "is " +
+                            // role_questions_response.employee_manager === employee_table[index].first_name + " " + employee_table[index].last_name)
                         if (role_questions_response.employee_manager === employee_table[index].first_name + " " + employee_table[index].last_name) {
                             manager_id = employee_table[index].emp_id;
                             break;
@@ -338,8 +339,8 @@ async function add_employee(restart_employee_tracker = true) {
 
                     connection.query(query_str, function (err, res) {
                         if (err) throw err;
-                        console.log("\n\n+++++++++++ " + query_str + " \n+++++++++++")
-                        console.table(res);
+                        // console.log("\n\n+++++++++++ " + query_str + " \n+++++++++++")
+                        // console.table(res);
                         if(restart_employee_tracker){
                             return start_employee_tracker()
                         }
@@ -361,13 +362,11 @@ async function view_employees() {
             LEFT JOIN role
             ON employee.role_id = role.role_id;
         `
-    console.log("\n\n+++++++++++ " + query_str + "\n+++++++++++")
+    // console.log("\n\n+++++++++++ " + query_str + "\n+++++++++++")
     connection.query(query_str, function (err, res) {
         if (err) throw err;
         console.table(res)
-        //  res.forEach((employee) => {
-        //    console.table(employee.first_name, employee.last_name, employee.title, employee.salary)
-        //})
+
         start_employee_tracker()
     })
 }
@@ -411,7 +410,9 @@ async function update_employee_roles(update) {
             })
             connection.query(get_roles_query, function (err, roles_table) {
                     if (roles_table.length === 0){
+                        console.log("+++++++++++++++++++++++++++++++")
                         console.log("You must add a role first");
+                        console.log("+++++++++++++++++++++++++++++++")
                         return start_employee_tracker();
                     }
                     role_table = roles_table;
@@ -440,8 +441,8 @@ async function update_employee_roles(update) {
                             for (let j = 0; j <= role_list.length; j += 1) {
                                 if (update_role_questions_response.employee_role === role_table[j].Title + " " + role_table[j].Department + " " + role_table[j].Salary) {
                                     role_id = role_table[j].Role;
-                                    console.log("++++++++ role_id +++++++++++")
-                                    console.log(role_id)
+                                    // console.log("++++++++ role_id +++++++++++")
+                                    // console.log(role_id)
                                     break;
                                 }
                             }
@@ -450,8 +451,8 @@ async function update_employee_roles(update) {
                             for (let index = 0; index < employee_table.length; index++) {
                                 if (update_role_questions_response.employee === employee_table[index].first_name + " " + employee_table[index].last_name) {
                                     emp_id = employee_table[index].emp_id;
-                                    console.log("++++++++ emp_id +++++++++++")
-                                    console.log(emp_id)
+                                    // console.log("++++++++ emp_id +++++++++++")
+                                    // console.log(emp_id)
                                     break;
                                 }
                             }
