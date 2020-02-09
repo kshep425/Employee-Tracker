@@ -1,5 +1,5 @@
 # Employee-Tracker
-Solution for managing a company's employees using node, inquirer, and MySQL.
+Solution for managing company employees using node, inquirer, and MySQL.
 
 ## Goals
 Using this tool will allow you to create a workforce and assign employees roles, departments, and managers.  The user will allow the user to:
